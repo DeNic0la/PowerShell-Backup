@@ -34,6 +34,7 @@ $LogFilePath = 'C:\Backup\Log\log.txt',
          LogMessage -Message "Ungültiges BackUp-Verzeichnis angegeben. Es wurde ein Neues erstellt" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath 
     }    
     LogMessage -Message "Alle Parameter sind Korrekt. Backup Wird gestartet" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath
+    Get-Item -Path $SourcePath| Get-ChildItem -Recurse | foreach { LogMessage -Message $_ -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath }
 
 }
 
