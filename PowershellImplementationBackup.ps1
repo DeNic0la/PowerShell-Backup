@@ -18,9 +18,9 @@
 # @Param: $LogFilePath - Verzeichniss zur Logdatei - in diese Datei werden alle Meldungen ausgegeben. Wenn die Datei nicht vorhanden ist wird sie erstellt, die Ordnerstruktur jedoch nicht
 # @Param: $WriteLogToHost - Boolean: wenn true werden die Log-Nachrichten auch im Write-Host ausgegeben.
 function doBackup(
-$SourcePath = 'I:\Backup\Source\', 
-$BackUpPath = 'I:\Backup\Backup\',
-$LogFilePath = 'I:\Backup\Log\log.txt',
+$SourcePath = 'C:\Backup\Source\', 
+$BackUpPath = 'C:\Backup\Backup\',
+$LogFilePath = 'C:\Backup\Log\log.txt',
 [bool]$WriteLogToHost = 1
 ){
     if (-not(Test-Path $LogFilePath -PathType Leaf)){
@@ -90,7 +90,7 @@ $LogFilePath = 'I:\Backup\Log\log.txt',
 function LogMessage(
 $Message = "",
 [bool]$doHostWrite = 1,
-$LogPath = 'I:\Backup\Log\log.txt'
+$LogPath = 'C:\Backup\Log\log.txt'
 ){
 if (Test-Path $LogPath -PathType Leaf){
         $MessageToWrite = "["+(Get-Date -Format "dd/MM/yyyy HH:mm:ss") + "]:"+$Message
@@ -111,10 +111,10 @@ if (Test-Path $LogPath -PathType Leaf){
 # @Param: $WriteLogToHost - Boolean: wenn true werden die Log-Nachrichten auch im Write-Host ausgegeben.
 # @Param: $LogPath - Das Verzeichniss zum Log file. Muss vorhanden un korrekt sein
 function checkBackup(
-$SourcePath = "I:\Backup\Source\",
-$BackUpPath = 'I:\Backup\Backup\',
+$SourcePath = "C:\Backup\Source\",
+$BackUpPath = 'C:\Backup\Backup\',
 [bool]$doHostWrite = $true ,
-$LogPath = 'I:\Backup\Log\log.txt'
+$LogPath = 'C:\Backup\Log\log.txt'
 ){
      $MissingFiles = 0
      Get-ChildItem -Path $SourcePath -Recurse | ForEach-Object {
