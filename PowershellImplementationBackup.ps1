@@ -2,7 +2,7 @@
 ######################################################################################################
 ######################################################################################################
 ##                                                                                                  ##
-## BackupStrategie                                                                                  ##
+## BackupScript                                                                                     ##
 ## Nicola Fioretti                                                                                  ##
 ## Laurin Lötscher                                                                                  ##
 ##                                                                                                  ##
@@ -12,52 +12,54 @@
 
 
 # @Desc Macht das Backup
-# @Return das ergebniss der Addition von den beiden parameter
-# @Param: $ErsteZahl - Die erste Zahl für die Addition
-# @Param: $ZweiteZahl - Die zweite Zahl für die Addition
+# @Return Nichts
+# @Param: $SourcePath - Quellverzeichnis, von diesem Ordner aus wird alles Kopiert
+# @Param: $BackUpPath - Backupverzeicniss in diesen Ordner wird alles Kopiert
+# @Param: $LogFilePath - Verzeichniss zur Logdatei - in diese Datei werden alle Meldungen ausgegeben. Wenn die Datei nicht vorhanden ist wird sie erstellt, die Ordnerstruktur jedoch nicht
+# @Param: $WriteLogToHost - Boolean: wenn true werden die Log-Nachrichten auch im Write-Host ausgegeben.
 function doBackup(
-$SourcePath = 'C:\Backup\Source\', 
-$BackUpPath = 'C:\Backup\Backup\',
-$LogFilePath = 'C:\Backup\Log\log.txt',
+$SourcePath = 'I:\Backup\Source\', 
+$BackUpPath = 'I:\Backup\Backup\',
+$LogFilePath = 'I:\Backup\Log\log.txt',
 [bool]$WriteLogToHost = 1
 ){
     if (-not(Test-Path $LogFilePath -PathType Leaf)){
         New-Item -Path $LogFilePath -ItemType File
-        LogMessage -Message "Ungültiges Log-File. Es wurde eines Erstellt" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath 
+        LogMessage -Message "Ungültiges Log-File. Es wurde eines Erstellt" -doHostWrite $WriteLogToHost -LogPath $LogFilePath 
     }
     if (-not(Test-Path $SourcePath)){
-        LogMessage -Message "Ungültiges Quellverzeichnis" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath 
+        LogMessage -Message "Ungültiges Quellverzeichnis" -doHostWrite $WriteLogToHost -LogPath $LogFilePath 
         
     }
     if (-not(Test-Path $BackUpPath)){
         New-Item -Path $BackUpPath -ItemType Directory
-         LogMessage -Message "Ungültiges BackUp-Verzeichnis angegeben. Es wurde ein Neues erstellt" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath 
+         LogMessage -Message "Ungültiges BackUp-Verzeichnis angegeben. Es wurde ein Neues erstellt" -doHostWrite $WriteLogToHost -LogPath $LogFilePath 
     }    
-    LogMessage -Message "Alle Parameter sind Korrekt. Backup Wird gestartet" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath
+    LogMessage -Message "Alle Parameter sind Korrekt. Backup Wird gestartet" -doHostWrite $WriteLogToHost -LogPath $LogFilePath
     
     #Starte Backup
 
 
     Get-ChildItem -Path $SourcePath -Recurse | ForEach-Object {
         if ($_.DirectoryName -eq $null){
-        LogMessage -Message "Ordner Entdeckt: $_" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath
+        LogMessage -Message "Ordner Entdeckt: $_" -doHostWrite $WriteLogToHost -LogPath $LogFilePath
         }
         else{
-        LogMessage -Message "Datei Entdeckt: $_" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath
+        LogMessage -Message "Datei Entdeckt: $_" -doHostWrite $WriteLogToHost -LogPath $LogFilePath
             Set-Location $SourcePath
             $relativePath = Resolve-Path -Relative $_.Directory
             Set-Location $BackUpPath
             if (-not(Test-Path $relativePath)){
                 mkdir $relativePath
-                LogMessage -Message "Neuer Ordner erstellt: $relativePath" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath
+                LogMessage -Message "Neuer Ordner erstellt: $relativePath" -doHostWrite $WriteLogToHost -LogPath $LogFilePath
             }
             if ($relativePath.StartsWith("..")){
                 $_ | Copy-Item -Destination $BackUpPath
-                LogMessage -Message "Datei Kopiert $_" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath
+                LogMessage -Message "Datei Kopiert $_" -doHostWrite $WriteLogToHost -LogPath $LogFilePath
             }
             else{
                 $_ | Copy-Item -Destination $relativePath
-                LogMessage -Message "Datei Kopiert $_" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath
+                LogMessage -Message "Datei Kopiert $_" -doHostWrite $WriteLogToHost -LogPath $LogFilePath
             }
             
         }
@@ -65,27 +67,77 @@ $LogFilePath = 'C:\Backup\Log\log.txt',
 
     #Get-Item -Path $SourcePath| Get-ChildItem -Recurse | foreach { LogMessage -Message $_ -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath }
 
-    LogMessage -Message "Das Backup wurde abgeschlossen" -WriteToLogFile $WriteLogToHost -LogPath $LogFilePath
+    LogMessage -Message "Das Backup wurde abgeschlossen" -doHostWrite $WriteLogToHost -LogPath $LogFilePath
 
-    Compare-Object -ReferenceObject (Get-ChildItem $SourcePath -Recurse) -DifferenceObject (Get-ChildItem $BackUpPath -Recurse) -Property Name,Length| Write-Host
+    $FilesMissing = checkBackup -SourcePath $SourcePath -BackUpPath $BackUpPath -doHostWrite $WriteLogToHost -LogPath $LogFilePath
+
+    if ($FilesMissing -eq 0){
+        LogMessage -Message "Beim Backup wurden alle Datein übernommen" -doHostWrite $WriteLogToHost -LogPath $LogFilePath   
+    }
+    else{
+        LogMessage -Message "Es wurden $FilesMissing nicht richtig im Backup gespeichert" -doHostWrite $WriteLogToHost -LogPath $LogFilePath 
+    }
+
+
+   
 }
 
-# @Desc Macht das Backup
-# @Return das ergebniss der Addition von den beiden parameter
-# @Param: $ErsteZahl - Die erste Zahl für die Addition
-# @Param: $ZweiteZahl - Die zweite Zahl für die Addition
+# @Desc Schreibt das Log mit Time-Stamp.
+# @Return Nichts
+# @Param: $Message - Die Nachricht welche ausgegeben werden soll
+# @Param: $doHostWrite - Boolean: wenn true werden die Log-Messages auch auf der Konsole angezeigt
+# @Param: $LogPath - Die Datei mit Pfad in welche die Ausgabe angefügt wird.
 function LogMessage(
 $Message = "",
-[bool]$WriteToLogFile = 'true',
-$LogPath = 'C:\Backup\Log\log.txt'
+[bool]$doHostWrite = 1,
+$LogPath = 'I:\Backup\Log\log.txt'
 ){
-    Write-Host "["(Get-Date -Format "dd/MM/yyyy HH:mm:ss") "]:"$Message
-    if(!$WriteToLogFile){return}
-    if (Test-Path $LogPath -PathType Leaf){
+if (Test-Path $LogPath -PathType Leaf){
         $MessageToWrite = "["+(Get-Date -Format "dd/MM/yyyy HH:mm:ss") + "]:"+$Message
         $MessageToWrite|Add-Content $LogPath
            
     }
+    if(!$doHostWrite){return}
+    Write-Host "["(Get-Date -Format "dd/MM/yyyy HH:mm:ss") "]:"$Message
+    
+    
+}
+
+
+# @Desc ¨Überprüft ob das Backup funktioniert hat
+# @Return Anzahl Fehlender oder Veralteter Dateien
+# @Param: $SourcePath - Quellverzeichnis, der Ordner aus welchem das Backup gemacht wurde
+# @Param: $BackUpPath - Backupverzeicniss der Ordner in welchem das Backup gespeichert ist
+# @Param: $WriteLogToHost - Boolean: wenn true werden die Log-Nachrichten auch im Write-Host ausgegeben.
+# @Param: $LogPath - Das Verzeichniss zum Log file. Muss vorhanden un korrekt sein
+function checkBackup(
+$SourcePath = "I:\Backup\Source\",
+$BackUpPath = 'I:\Backup\Backup\',
+[bool]$doHostWrite = $true ,
+$LogPath = 'I:\Backup\Log\log.txt'
+){
+     $MissingFiles = 0
+     Get-ChildItem -Path $SourcePath -Recurse | ForEach-Object {
+        if ($_.DirectoryName -ne $null){
+            Set-Location $SourcePath
+            $relativePath = Resolve-Path -Relative $_.FullName
+            Set-Location $BackUpPath
+            if (-not(Test-Path $relativePath -PathType Leaf)){
+                LogMessage -Message "Eine Datei wurde nicht richtig gespeichert: $_" -doHostWrite $doHostWrite -LogPath $LogPath
+                $MissingFiles++
+            }
+            else {
+                if ((Get-Content $_.FullName) -ne $null){
+                    if(Compare-Object -ReferenceObject (Get-Content (Get-Item $relativePath)) -DifferenceObject (Get-Content $_.FullName)){
+                        LogMessage -Message "Eine Datei wurde im Backup gefunden, ist jedoch nicht aktuell: $_" -doHostWrite $doHostWrite -LogPath $LogPath
+                        $MissingFiles++ 
+                    }
+                }
+  
+            }
+        }
+    }
+    return $MissingFiles
 }
 
 
