@@ -93,7 +93,7 @@ $Message = "",
 $LogPath = 'C:\Backup\Log\log.txt'
 ){
 if (Test-Path $LogPath -PathType Leaf){
-        $MessageToWrite = "["+(Get-Date -Format "dd/MM/yyyy HH:mm:ss") + "]:"+$Message
+        $MessageToWrite = "["+(Get-Date -Format "dd/MM/yyyy HH:mm:ss") + "]:"+$Message+"(Powershell Backup)"
         $MessageToWrite|Add-Content $LogPath
            
     }
