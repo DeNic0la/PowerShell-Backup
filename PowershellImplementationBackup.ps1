@@ -95,8 +95,10 @@ $Message = "",
 $LogPath = 'C:\Backup\Log\log.txt'
 ){
 if (Test-Path $LogPath -PathType Leaf){
-        $MessageToWrite = "["+(Get-Date -Format "dd/MM/yyyy HH:mm:ss") + "]:"+$Message+ "(" + (Get-PSCallStack | Select-Object -Property Command) + ")"
+        
+        $MessageToWrite = "["+(Get-Date -Format "dd/MM/yyyy HH:mm:ss") + "]:"+$Message+ "(" + (Get-PSCallStack | Select-Object -Property Command  )+ ")"
         $MessageToWrite|Add-Content $LogPath
+
            
     }
     if(!$doHostWrite){return}
@@ -106,6 +108,7 @@ if (Test-Path $LogPath -PathType Leaf){
     
     
 }
+
 
 
 # @Desc ¨Überprüft ob das Backup funktioniert hat
