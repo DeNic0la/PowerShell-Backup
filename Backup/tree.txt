@@ -1,0 +1,102 @@
+Auflistung der Ordnerpfade fÅr Volume DATA
+Volumeseriennummer : E697-CF90
+I:.
+|   tree.txt
+|   
++---Backup
++---Log
+\---Source
+    |   index.d.ts
+    |   LICENSE
+    |   Lroem Ipsum.txt
+    |   package.json
+    |   README.md
+    |   
+    +---Dateien
+    |   |   api.php
+    |   |   channels.php
+    |   |   console.php
+    |   |   web.php
+    |   |   
+    |   \---SomeTest
+    |       |   CreatesApplication.php
+    |       |   TestCase.php
+    |       |   
+    |       +---Feature
+    |       |       app.scss
+    |       |       email.blade.php
+    |       |       ExampleTest.php
+    |       |       reset.blade.php
+    |       |       _variables.scss
+    |       |       
+    |       \---Unit
+    |               app.js
+    |               bootstrap.js
+    |               dropzone.vue
+    |               ExampleComponent.vue
+    |               ExampleTest.php
+    |               
+    +---Ordner 3
+    |       Datei 1.txt
+    |       more.accdb
+    |       Tabelle.sxl
+    |       Text.txt
+    |       
+    \---Test
+        |   2014_10_12_100000_create_password_resets_table.php
+        |   2019_08_19_000000_create_failed_jobs_table.php
+        |   2020_08_30_181550_create_events_table.php
+        |   2020_09_13_070546_create_images_table.php
+        |   app.js
+        |   Helikopter.txt
+        |   
+        \---Ordner
+            |   AuthServiceProvider.php
+            |   BroadcastServiceProvider.php
+            |   Ein Word.docx
+            |   EventServiceProvider.php
+            |   RouteServiceProvider.php
+            |   
+            \---Lets Go DEEP
+                |   AppServiceProvider.php
+                |   EncryptCookies.php
+                |   Leer.txt
+                |   RedirectIfAuthenticated.php
+                |   TrimStrings.php
+                |   TrustHosts.php
+                |   TrustProxies.php
+                |   VerifyCsrfToken.php
+                |   
+                \---Weiter
+                    |   Authenticate.php
+                    |   CheckForMaintenanceMode.php
+                    |   Controller.php
+                    |   EventsController.php
+                    |   Leer.txt
+                    |   UploadsController.php
+                    |   
+                    \---weiter
+                        |   leer.txt
+                        |   RegisterController.php
+                        |   ResetPasswordController.php
+                        |   VerificationController.php
+                        |   
+                        +---weiter
+                        |   |   Event.blade.php
+                        |   |   Events.blade.php
+                        |   |   leer.txt
+                        |   |   welcome.blade.php
+                        |   |   
+                        |   \---Again
+                        |           app.blade.php
+                        |           register.blade.php
+                        |           verify.blade.php
+                        |           Wie gesund ist vegan.txt
+                        |           
+                        \---weiter und dann leer
+                                AuthServiceProvider.php
+                                BroadcastServiceProvider.php
+                                EventServiceProvider.php
+                                leer.txt
+                                RouteServiceProvider.php
+                                

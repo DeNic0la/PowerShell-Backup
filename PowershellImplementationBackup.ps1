@@ -25,15 +25,17 @@ $LogFilePath = 'C:\Backup\Log\log.txt',
 ){
     if (-not(Test-Path $LogFilePath -PathType Leaf)){
         New-Item -Path $LogFilePath -ItemType File
-        LogMessage -Message "Ungültiges Log-File. Es wurde eines Erstellt" -doHostWrite $WriteLogToHost -LogPath $LogFilePath 
+        LogMessage -Message "Ungültiges Log-File." -doHostWrite $WriteLogToHost -LogPath $LogFilePath 
     }
     if (-not(Test-Path $SourcePath)){
-        LogMessage -Message "Ungültiges Quellverzeichnis" -doHostWrite $WriteLogToHost -LogPath $LogFilePath 
+        LogMessage -Message "Ungültiges Quellverzeichnis. Breche ab..." -doHostWrite $WriteLogToHost -LogPath $LogFilePath 
+        return
         
     }
     if (-not(Test-Path $BackUpPath)){
         New-Item -Path $BackUpPath -ItemType Directory
-         LogMessage -Message "Ungültiges BackUp-Verzeichnis angegeben. Es wurde ein Neues erstellt" -doHostWrite $WriteLogToHost -LogPath $LogFilePath 
+         LogMessage -Message "Ungültiges BackUp-Verzeichnis angegeben. Breche ab..." -doHostWrite $WriteLogToHost -LogPath $LogFilePath 
+         return
     }    
     LogMessage -Message "Alle Parameter sind Korrekt. Backup Wird gestartet" -doHostWrite $WriteLogToHost -LogPath $LogFilePath
     
